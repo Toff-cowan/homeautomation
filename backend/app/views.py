@@ -27,21 +27,91 @@ from math import floor
 
 
 # 1. CREATE ROUTE FOR '/api/set/combination'
-    
+@app.route('/api/set/combination', methods=["POST"])
+def set_combination():
+    if request.method == "POST":
+        try:
+            form =  request.form
+            passcode = escape(form.get("passcode"))
+            result = mongo.set_combination(passcode)
+
+            if result:
+                return jsonify({"status":"complete", "data":"complete"})
+            
+        except Exception as e:
+            print(f"set_combination error: f{str(e)}")
+
+    return jsonify({"status":"failed", "data":"failed"})
+
 # 2. CREATE ROUTE FOR '/api/check/combination'
+@app.route('/api/check/combination', methods=["POST"])
+def check_combination():
+    if request.method == "POST":
+        try:
+            form =  request.form
+            passcode = escape(form.get("passcode"))
+            result = mongo.check_combination(passcode)
+
+            if result:
+                return jsonify({"status":"complete", "data":"complete"})
+            
+        except Exception as e:
+            print(f"set_combination error: f{str(e)}")
+
+    return jsonify({"status":"failed", "data":"failed"})
 
 # 3. CREATE ROUTE FOR '/api/update'
-   
+@app.route('/api/update', methods=["POST"])
+def update():
+    if request.method == "POST":
+        try:
+            form =  request.form
+            data = escape(form.get("data"))
+            data = data[:-1] + str(time()) + '}'
+            Mqtt.publish(data)
+            result = mongo.update(data)
+
+            if result:
+                return jsonify({"status":"complete", "data":"complete"})
+            
+        except Exception as e:
+            print(f"set_combination error: f{str(e)}")
+
+    return jsonify({"status":"failed", "data":"failed"})
+
 # 4. CREATE ROUTE FOR '/api/reserve/<start>/<end>'
+@app.route('/api/reserve/<start>/<end>', methods=["GET"])
+def reserve(start, end):
+    if request.method == "GET":
+        try:
+            START = escape(start)
+            END = escape(end)
+            data = mongo.reserve(START, END)
+
+            if data:
+                return jsonify({"status":"complete", "data":data})
+            
+        except Exception as e:
+            print(f"set_combination error: f{str(e)}")
+
+    return jsonify({"status":"failed", "data":0})
 
 # 5. CREATE ROUTE FOR '/api/avg/<start>/<end>'
+@app.route('/api/avg/<start>/<end>', methods=["GET"])
+def avg(start, end):
+    if request.method == "GET":
+        try:
+            START = escape(start)
+            END = escape(end)
+            data = mongo.avg(START, END)
 
+            if data:
+                return jsonify({"status":"complete", "data":data})
+            
+        except Exception as e:
+            print(f"set_combination error: f{str(e)}")
 
-   
-
-
-
-
+    return jsonify({"status":"failed", "data":0})
 
 
 @app.route('/api/file/get/<filename>', methods=['GET']) 
